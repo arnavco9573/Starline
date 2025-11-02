@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${seogefont.className} antialiased`}>
+      <body className={`${seogefont.className} antialiased`} suppressHydrationWarning>
         {/* Providers is the only component needed here */}
         <Providers>{children}</Providers>
       </body>
