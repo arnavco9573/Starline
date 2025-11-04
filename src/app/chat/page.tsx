@@ -28,7 +28,7 @@ export default function ChatPage() {
   async function handleSend() {
     if (!userInput.trim()) return;
 
-    const newMessages = [...messages, { role: "user", text: userInput }];
+    const newMessages = [...messages, { role: "user" as const, text: userInput }];
     setMessages(newMessages);
 
     const updatedAnswers = [...answers, userInput];
@@ -73,12 +73,12 @@ export default function ChatPage() {
           {/* <img src="/const.png" alt="logo" className="w-20 h-20 drop-shadow-2xl " /> */}
           <div>
             <h1 className="text-4xl font-extrabold text-gray-900" >
-            Building Code Compliance 
-          </h1>
-          <h1 className="text-4xl font-extrabold text-gray-900" style={{fontWeight:"2000"}}>Chatbot</h1>
+              Building Code Compliance
+            </h1>
+            <h1 className="text-4xl font-extrabold text-gray-900" style={{ fontWeight: "2000" }}>Chatbot</h1>
           </div>
         </div>
-        
+
       </div>
 
       {/* Chat Container */}
