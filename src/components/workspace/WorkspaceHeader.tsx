@@ -35,7 +35,8 @@ export default function WorkspaceHeader({
             </a>
 
             {/* --- Token Button & Popover --- */}
-            <div className="relative">
+            <div className="relative flex items-center gap-4">
+                <p className="text-md font-semibold border border-amber-100 py-1 px-3 rounded-md cursor-pointer hover:bg-gray-200">chat</p>
                 <TooltipButton onClick={handleOpenTokenPopover} tooltipText="Dropbox Token" icon={<KeyRound className="w-5 h-5" />} className="bg-gray-100 text-black hover:bg-gray-200" />
                 <DropboxTokenPopover
                     isOpen={showTokenPopover}
