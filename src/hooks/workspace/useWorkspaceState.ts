@@ -8,13 +8,10 @@ import {
   checkpointQuestions,
   idealForText,
 } from "@/lib/constants";
-import {
-  AnalysisIssue,
-  Mode,
-  ProcessingState,
-} from "@/types/workspace";
+import { AnalysisIssue, Mode, ProcessingState } from "@/types/workspace";
 import {
   analyzeWorkspace,
+  AnalyzeWorkspaceParams,
   WorkspaceAnalysisResponse,
 } from "@/services/workspace";
 
@@ -44,8 +41,9 @@ export function useWorkspaceState() {
   const [selectedDegree, setSelectedDegree] = useState<number>(1); // Changed from quality
   const [showProjectPopover, setShowProjectPopover] = useState(false);
   const [showNewProjectPopover, setShowNewProjectPopover] = useState(false);
-  const [activeProject, setActiveProject] =
-    useState<{ name: string } | null>(null);
+  const [activeProject, setActiveProject] = useState<{ name: string } | null>(
+    null
+  );
   const [riskScore, setRiskScore] = useState(0);
   const [finalRiskScore, setFinalRiskScore] = useState(0);
   const [reportUrl, setReportUrl] = useState<string | null>(null);
@@ -86,6 +84,7 @@ export function useWorkspaceState() {
   const hasFinalizedRef = useRef(false);
   const inputPdfObjectUrlRef = useRef<string | null>(null);
   const outputPdfObjectUrlRef = useRef<string | null>(null);
+  const lastRequestRef = useRef<AnalyzeWorkspaceParams | null>(null);
 
   const isHomePage = pathname === "/";
 
@@ -379,8 +378,14 @@ export function useWorkspaceState() {
 
     // --- Token Validation ---
     const now = Date.now();
-    if (!dropboxToken || !tokenSetTime || now - tokenSetTime >= TOKEN_EXPIRATION_MS) {
-      setAnalysisError("Dropbox token is missing or expired. Please set a new token.");
+    if (
+      !dropboxToken ||
+      !tokenSetTime ||
+      now - tokenSetTime >= TOKEN_EXPIRATION_MS
+    ) {
+      setAnalysisError(
+        "Dropbox token is missing or expired. Please set a new token."
+      );
       setShowTokenPopover(true);
       return;
     }
@@ -405,26 +410,48 @@ export function useWorkspaceState() {
 
     (async () => {
       setIsUploading(true);
+
       try {
-        const result = await analyzeWorkspace({
+        const requestPayload = {
           pdf_file: uploadedFile,
           mode: activeMode,
           degree: selectedDegree,
-          accessToken: dropboxToken, // Pass the valid token
+          accessToken: dropboxToken,
           projectName,
           questionnaire: trimmedAnswers.filter((answer) => answer.length > 0),
-        });
+        };
+
+        lastRequestRef.current = requestPayload;
+        const result = await analyzeWorkspace(requestPayload);
         setAnalysisResult(result);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         setAnalysisError(message);
-        setProcessingState("idle");
+        setProcessingState("error");
         setProcessedCheckpoints(0);
         setCurrentProcessingIndex(0);
       } finally {
         setIsUploading(false);
       }
     })();
+  };
+
+  const handleRetry = async () => {
+    if (!lastRequestRef.current) return;
+    setAnalysisError(null);
+    setProcessingState("processing");
+    setIsUploading(true);
+
+    try {
+      const result = await analyzeWorkspace(lastRequestRef.current);
+      setAnalysisResult(result);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setAnalysisError(message);
+      setProcessingState("idle");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleModeChange = (mode: Mode) => {
@@ -455,6 +482,7 @@ export function useWorkspaceState() {
   };
 
   const handleDegreeClick = (degree: number) => {
+    if (activeMode !== "base") return;
     setSelectedDegree(degree);
   };
 
@@ -590,6 +618,7 @@ export function useWorkspaceState() {
     handleZoomOut,
     handleResetZoom,
     toggleModeDropdown,
+    handleRetry,
 
     // --- Token Handlers ---
     handleTokenSubmit,
@@ -598,4 +627,3 @@ export function useWorkspaceState() {
     // ---
   };
 }
-

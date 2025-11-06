@@ -8,7 +8,8 @@ export type ProcessingState =
   | "idle"
   | "processing"
   | "calculating"
-  | "complete";
+  | "complete"
+  | "error";
 
 export interface IssueLocation {
   coordinate_system: string;

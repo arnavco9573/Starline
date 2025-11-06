@@ -97,6 +97,7 @@ export default function ImageWorkspace() {
     handleZoomOut,
     handleResetZoom,
     toggleModeDropdown,
+    handleRetry,
     // --- Token Handlers ---
     showTokenPopover,
     tokenSetTime,
@@ -114,8 +115,6 @@ export default function ImageWorkspace() {
   const availableDegrees: number[] = [];
   if (activeMode === "base") {
     availableDegrees.push(1, 2, 3, 4);
-  } else if (activeMode === "plus") {
-    availableDegrees.push(1, 2);
   }
 
   return (
@@ -390,24 +389,26 @@ export default function ImageWorkspace() {
               </>
             )}
 
-            {analysisError && (
+            {processingState === "error" && analysisError && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-3 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-2xl shadow-sm"
+                className="flex flex-col items-center gap-3 bg-red-50 border border-red-200 text-red-600 px-4 py-4 rounded-2xl shadow-sm"
               >
-                <AlertTriangle className="w-5 h-5" />
-                <span className="text-sm font-medium flex-1 text-left">
-                  {analysisError}
-                </span>
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5" />
+                  <span className="text-sm font-medium">Network Error. The server may be waking up.</span>
+                </div>
+
                 <button
-                  onClick={() => setAnalysisError(null)}
-                  className="p-1 rounded-full hover:bg-red-100 transition-colors"
+                  onClick={handleRetry}
+                  className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
                 >
-                  <X className="w-4 h-4" />
+                  Retry
                 </button>
               </motion.div>
             )}
+
 
             {!activeMode && (
               <p className="text-lg text-gray-500">

@@ -9,7 +9,7 @@ export interface WorkspaceAnalysisResponse {
   riskScore?: number | null;
 }
 
-interface AnalyzeWorkspaceParams {
+export interface AnalyzeWorkspaceParams {
   pdf_file: File;
   mode: Mode;
   degree: number;
@@ -45,7 +45,8 @@ export async function analyzeWorkspace({
   formData.append("mode", mode);
   formData.append("access_token", accessToken);
 
-  if (mode === "base" || mode === "plus") {
+  // ✅ Only send degree for base mode
+  if (mode === "base") {
     formData.append("degree", String(degree));
   }
 
@@ -53,44 +54,32 @@ export async function analyzeWorkspace({
     formData.append("project_name", projectName);
   }
 
-  if (questionnaire && questionnaire.length > 0) {
+  if (questionnaire?.length) {
     formData.append("questionnaire", JSON.stringify(questionnaire));
   }
 
+  // ✅ THREE BACKEND SWITCH
+  const backendUrl =
+    mode === "plus"
+      ? process.env.NEXT_PUBLIC_AI_PLUS_BACKEND_URL
+      : mode === "code"
+      ? process.env.NEXT_PUBLIC_AI_CODE_BACKEND_URL
+      : process.env.NEXT_PUBLIC_AI_BASE_BACKEND_URL;
+
   try {
-    const response = await axios.post(
-      `${process.env.NEXT_PUBLIC_AI_BACKEND_URL}/process-pdf`,
-      formData
-    );
+    const response = await axios.post(`${backendUrl}/process-pdf`, formData);
 
     const data = response.data ?? {};
 
-    // 1. Get the marked PDF Base64 data
-    const pdfBase64 = data.marked_pdf_base64;
-    if (!pdfBase64) {
-      throw new Error("API response did not contain marked_pdf_base64 data.");
-    }
-    const outputPdfUrl = createObjectUrlFromBase64(pdfBase64);
-
-    // 2. Get the issues directly from the response
-    // The normalizeIssues function now handles the new structure
+    const outputPdfUrl = createObjectUrlFromBase64(data.marked_pdf_base64);
     const issues = normalizeIssues(data.json_result?.issues || []);
-    if (issues.length === 0) {
-      console.warn("No issues were returned from the API.");
-    }
 
-    // 3. Return the data structure
     return {
       issues,
-      outputPdfUrl: outputPdfUrl, // Send the Base64 data URL
-      shouldRevokeOutputUrl: false, // We don't need to revoke this
+      outputPdfUrl,
+      shouldRevokeOutputUrl: false,
       reportUrl: data.reportUrl ?? data.report_url ?? null,
-      riskScore:
-        typeof data.riskScore === "number"
-          ? data.riskScore
-          : typeof data.risk_score === "number"
-          ? data.risk_score
-          : null,
+      riskScore: data.riskScore ?? data.risk_score ?? null,
     };
   } catch (error: any) {
     const message =
@@ -102,9 +91,6 @@ export async function analyzeWorkspace({
   }
 }
 
-// --- UPDATED FUNCTION ---
-// This function now maps all the new fields from your API response
-// to match the AnalysisIssue interface in AnalysisNotes.tsx
 function normalizeIssues(rawIssues: unknown): AnalysisIssue[] {
   if (!Array.isArray(rawIssues)) {
     return [];
