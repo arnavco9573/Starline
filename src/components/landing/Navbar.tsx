@@ -88,7 +88,7 @@ export default function Navbar() {
             Join Waiting List
           </Button>
 
-          <Link href="/auth/signup">
+          <Link href="/auth/login">
             <Button
               variant="default"
               className="rounded-full cursor-pointer flex items-center gap-2"

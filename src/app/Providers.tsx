@@ -2,6 +2,8 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { Toaster } from "sonner";
 import WishList from "@/components/landing/WishlistModal"; // Adjust path if needed
+import { Provider } from "react-redux";
+import { store } from "@/store/store";
 
 // Define the shape of the modal context
 interface ModalContextType {
@@ -28,11 +30,13 @@ export default function Providers({ children }: { children: ReactNode }) {
 
   return (
     // Provide the openWishlist function to all children
-    <ModalContext.Provider value={{ openWishlist }}>
-      {children}
-      {/* Render all global UI components here */}
-      <Toaster />
-      <WishList open={wishlistOpen} onOpenChange={setWishlistOpen} />
-    </ModalContext.Provider>
+    <Provider store={store}>
+      <ModalContext.Provider value={{ openWishlist }}>
+        {children}
+        {/* Render all global UI components here */}
+        <Toaster />
+        <WishList open={wishlistOpen} onOpenChange={setWishlistOpen} />
+      </ModalContext.Provider>
+    </Provider>
   );
 }
