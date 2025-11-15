@@ -1,11 +1,14 @@
 "use client"
 import { useEffect, useRef, useState } from "react";
 import * as THREE from 'three';
+import { useModal } from "../Providers";
 
 const PricingPage = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+
+   const { openWishlist } = useModal();
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -125,7 +128,7 @@ const PricingPage = () => {
     },
     {
       id: 'basic',
-      name: 'BASIC PLAN',
+      name: 'ESSENTIAL PLAN',
       price: '₹5,999',
       period: '/month',
       subtitle: 'For architecture studios handling submission-ready work.',
@@ -327,7 +330,7 @@ const PricingPage = () => {
             <p className="text-gray-600 mb-6">
               Schedule a demo with our team to see Starline in action and find the perfect fit for your workflow.
             </p>
-            <button className="px-8 py-3 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105">
+            <button onClick={openWishlist} className="px-8 py-3 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105">
               Schedule a Demo
             </button>
           </div>

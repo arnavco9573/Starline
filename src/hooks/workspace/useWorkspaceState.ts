@@ -13,14 +13,52 @@ import {
   analyzeWorkspace,
   AnalyzeWorkspaceParams,
   WorkspaceAnalysisResponse,
+  saveProject,
+  generateReport, // --- [FIX 3] --- Import new function
 } from "@/services/workspace";
+import { downloadBase64Pdf } from "@/lib/utils";
 
 export const projectQuestions = [
-  "What is your project type? (Residential / Commercial / Institutional / Industrial / Mixed-use, etc.)",
-  "What is the occupancy type? (Single-family, apartment, office, school, hospital, etc.)",
-  "How many floors does the building have, and what is the total height?",
-  "What is the built-up area, plot area, and Floor Area Ratio (FAR)?",
-  "Where is the site located? (City and State — for applicable building codes like NBC India, local bye-laws, fire norms, etc.)",
+  {
+    key: "Building Type / Occupancy Classification",
+    question: "What is the building’s type or occupancy classification?",
+  },
+  {
+    key: "Plot Area and Shape",
+    question: "What is the plot area and its shape?",
+  },
+  {
+    key: "Total Built-Up Area and Floor Count",
+    question: "What is the total built-up area and number of floors?",
+  },
+  {
+    key: "Building Height (in meters)",
+    question: "How tall is the building in meters?",
+  },
+  {
+    key: "Occupant Load and Expected Population per Floor",
+    question: "How many people are expected per floor?",
+  },
+  {
+    key: "Fire Safety Systems Provided",
+    question: "What fire safety systems are installed?",
+  },
+  {
+    key: "Accessibility Provisions (ramps, toilets, lifts, etc.)",
+    question: "What accessibility features are provided?",
+  },
+  {
+    key: "Service Planning (Electrical, HVAC, water, drainage, etc.)",
+    question: "What building services are planned or installed?",
+  },
+  {
+    key: "Access Road Width and Entry/Exit Configuration",
+    question: "What is the access road width and the entry/exit layout?",
+  },
+  {
+    key: "Jurisdiction or Development Control Regulation (DCR) applied",
+    question: "Which regulations or DCR apply to this project?",
+  },
 ];
 
 // 4 hours in milliseconds
@@ -49,17 +87,9 @@ export function useWorkspaceState() {
   const [reportUrl, setReportUrl] = useState<string | null>(null);
   const [step, setStep] = useState(0);
   const [projectName, setProjectName] = useState("");
-  const [answers, setAnswers] = useState<string[]>(
-    Array(projectQuestions.length).fill("")
-  );
+  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [zoom, setZoom] = useState(75);
   const [isPanning, setIsPanning] = useState(false);
-  const [isPaused, setIsPaused] = useState(false);
-  const [pausedAtCheckpoint, setPausedAtCheckpoint] = useState<number | null>(
-    null
-  );
-  const [currentQuestion, setCurrentQuestion] = useState<string | null>(null);
-  const [questionAnswer, setQuestionAnswer] = useState("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [inputPdfUrl, setInputPdfUrl] = useState<string | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
@@ -80,6 +110,8 @@ export function useWorkspaceState() {
   const processNextCheckpointRef = useRef<((index: number) => void) | null>(
     null
   );
+
+  const [isSavingProject, setIsSavingProject] = useState(false);
   const isResumingRef = useRef(false);
   const hasFinalizedRef = useRef(false);
   const inputPdfObjectUrlRef = useRef<string | null>(null);
@@ -93,6 +125,12 @@ export function useWorkspaceState() {
     [activeMode]
   );
   const totalCheckpoints = flatCheckpoints.length;
+
+  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+  const [showAgentPopover, setShowAgentPopover] = useState(false);
+
+  const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [rawAnalysisData, setRawAnalysisData] = useState<any>(null);
 
   // --- Dropbox Token Effects ---
   useEffect(() => {
@@ -164,6 +202,7 @@ export function useWorkspaceState() {
     setOutputPdfUrl(analysisResult.outputPdfUrl ?? null);
 
     if (activeMode === "code") {
+      setRawAnalysisData(analysisResult.rawAnalysisData);
       setReportUrl(analysisResult.reportUrl ?? null);
       const score = analysisResult.riskScore ?? 0;
       setTargetRiskScore(score);
@@ -182,13 +221,7 @@ export function useWorkspaceState() {
     }
 
     hasFinalizedRef.current = true;
-  }, [
-    analysisResult,
-    activeMode,
-    processedCheckpoints,
-    processingState,
-    totalCheckpoints,
-  ]);
+  }, [analysisResult, activeMode]);
 
   useEffect(() => {
     if (isResumingRef.current) {
@@ -196,7 +229,7 @@ export function useWorkspaceState() {
       return;
     }
 
-    if (processingState === "processing" && activeMode && !isPaused) {
+    if (processingState === "processing" && activeMode) {
       let timeoutId: NodeJS.Timeout | undefined;
 
       if (processedCheckpoints === 0) {
@@ -206,17 +239,6 @@ export function useWorkspaceState() {
 
       const processNextCheckpoint = (index = 0) => {
         setCurrentProcessingIndex(index);
-
-        const questionAtCheckpoint = checkpointQuestions[activeMode]?.find(
-          (q) => q.checkpoint === index
-        );
-
-        if (questionAtCheckpoint && !isPaused) {
-          setIsPaused(true);
-          setPausedAtCheckpoint(index);
-          setCurrentQuestion(questionAtCheckpoint.question);
-          return;
-        }
 
         if (checkpointRefs.current[index]) {
           checkpointRefs.current[index]?.scrollIntoView({
@@ -296,24 +318,64 @@ export function useWorkspaceState() {
   const handleOpenTokenPopover = () => setShowTokenPopover(true);
   // ---
 
-  const handleQuestionSubmit = () => {
-    isResumingRef.current = true;
+  const runAnalysis = (agentToUse: string | null) => {
+    if (!uploadedFile || !activeMode) return;
 
-    setIsPaused(false);
-    setCurrentQuestion(null);
-    setQuestionAnswer("");
-
-    if (pausedAtCheckpoint !== null && processNextCheckpointRef.current) {
-      setTimeout(() => {
-        if (processNextCheckpointRef.current) {
-          setProcessedCheckpoints((prev) => prev + 1);
-          processNextCheckpointRef.current(pausedAtCheckpoint + 1);
-        }
-        setPausedAtCheckpoint(null);
-      }, 100);
-    } else {
-      setPausedAtCheckpoint(null);
+    // Token Validation
+    const now = Date.now();
+    if (
+      !dropboxToken ||
+      !tokenSetTime ||
+      now - tokenSetTime >= TOKEN_EXPIRATION_MS
+    ) {
+      setAnalysisError(
+        "Dropbox token is missing or expired. Please set a new token."
+      );
+      setShowTokenPopover(true);
+      return;
     }
+
+    // --- All the logic from handleProceed is now here ---
+    resetOutputPdf();
+    setProcessingState("processing");
+    setShowStickyNote(false);
+    setAnalysisIssues([]);
+    setAnalysisResult(null);
+    setAnalysisError(null);
+    setRiskScore(0);
+    setFinalRiskScore(0);
+    setReportUrl(null);
+    setProcessedCheckpoints(0);
+    setCurrentProcessingIndex(0);
+    hasFinalizedRef.current = false;
+
+    (async () => {
+      setIsUploading(true);
+
+      try {
+        const requestPayload: AnalyzeWorkspaceParams = {
+          pdf_file: uploadedFile,
+          mode: activeMode,
+          degree: selectedDegree,
+          accessToken: dropboxToken,
+          projectName,
+          questionnaire: Object.values(answers),
+          agentKey: agentToUse, // <-- Use the passed-in agent
+        };
+
+        lastRequestRef.current = requestPayload;
+        const result = await analyzeWorkspace(requestPayload);
+        setAnalysisResult(result);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        setAnalysisError(message);
+        setProcessingState("error");
+        setProcessedCheckpoints(0);
+        setCurrentProcessingIndex(0);
+      } finally {
+        setIsUploading(false);
+      }
+    })();
   };
 
   const resetOutputPdf = () => {
@@ -327,7 +389,7 @@ export function useWorkspaceState() {
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
+    setSelectedAgent(null);
     if (file.type !== "application/pdf") {
       // Use custom alert logic here if available, fallback to console
       console.error("Please upload a PDF file.");
@@ -376,7 +438,7 @@ export function useWorkspaceState() {
       return;
     }
 
-    // --- Token Validation ---
+    // Check for token first (we can do this here or in runAnalysis)
     const now = Date.now();
     if (
       !dropboxToken ||
@@ -389,51 +451,46 @@ export function useWorkspaceState() {
       setShowTokenPopover(true);
       return;
     }
-    // ---
 
-    resetOutputPdf();
-    setProcessingState("processing");
-    setShowStickyNote(false);
-    setAnalysisIssues([]);
-    setAnalysisResult(null);
+    if (activeMode === "code" && !selectedAgent) {
+      // If no agent is selected, just show the popover.
+      setShowAgentPopover(true);
+      return;
+    }
+
+    // If we're here, we have an agent (or don't need one), so run the analysis.
+    runAnalysis(selectedAgent);
+  };
+
+  const handleGenerateReport = async () => {
+    if (!rawAnalysisData || !dropboxToken || isGeneratingReport) return;
+
+    setIsGeneratingReport(true);
     setAnalysisError(null);
-    setRiskScore(0);
-    setFinalRiskScore(0);
-    setReportUrl(null);
-    setProcessedCheckpoints(0);
-    setCurrentProcessingIndex(0);
-    setIsPaused(false);
-    setPausedAtCheckpoint(null);
-    hasFinalizedRef.current = false;
+    try {
+      // 3. Get both values from the API call
+      const { reportUrl, base64Pdf } = await generateReport(
+        rawAnalysisData,
+        dropboxToken
+      );
 
-    const trimmedAnswers = answers.map((answer) => answer.trim());
-
-    (async () => {
-      setIsUploading(true);
-
-      try {
-        const requestPayload = {
-          pdf_file: uploadedFile,
-          mode: activeMode,
-          degree: selectedDegree,
-          accessToken: dropboxToken,
-          projectName,
-          questionnaire: trimmedAnswers.filter((answer) => answer.length > 0),
-        };
-
-        lastRequestRef.current = requestPayload;
-        const result = await analyzeWorkspace(requestPayload);
-        setAnalysisResult(result);
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        setAnalysisError(message);
-        setProcessingState("error");
-        setProcessedCheckpoints(0);
-        setCurrentProcessingIndex(0);
-      } finally {
-        setIsUploading(false);
+      // 4. If we got Base64 data, trigger the download
+      if (base64Pdf) {
+        const fileName = `Starline_Report_${Date.now()}.pdf`;
+        downloadBase64Pdf(base64Pdf, fileName);
       }
-    })();
+
+      // 5. Set the URL as a fallback
+      // This makes the "Download Report" link appear,
+      // just in case the automatic download fails or the user wants it again.
+      setReportUrl(reportUrl);
+    } catch (error: any) {
+      setAnalysisError(
+        error.message || "Failed to generate report. Please try again."
+      );
+    } finally {
+      setIsGeneratingReport(false);
+    }
   };
 
   const handleRetry = async () => {
@@ -466,6 +523,8 @@ export function useWorkspaceState() {
     resetOutputPdf();
     setInputPdfUrl(null);
     setUploadedFile(null);
+    setSelectedAgent(null);
+    setShowAgentPopover(false);
     setAnalysisResult(null);
     setAnalysisError(null);
     setShowStickyNote(false);
@@ -481,6 +540,19 @@ export function useWorkspaceState() {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const handleAgentSelect = (agentKey: string) => {
+    setSelectedAgent(agentKey); // Set state for the UI
+    setShowAgentPopover(false); // Close the popover
+
+    // Run the analysis immediately with the new key.
+    // No timeout, no stale state.
+    runAnalysis(agentKey);
+  };
+
+  const handleCloseAgentPopover = () => {
+    setShowAgentPopover(false);
+  };
+
   const handleDegreeClick = (degree: number) => {
     if (activeMode !== "base") return;
     setSelectedDegree(degree);
@@ -491,12 +563,29 @@ export function useWorkspaceState() {
     setShowNewProjectPopover(true);
     setStep(0);
     setProjectName("");
-    setAnswers(Array(projectQuestions.length).fill(""));
+    setAnswers({});
   };
 
-  const handleProjectCreated = () => {
-    setActiveProject({ name: projectName });
-    setShowNewProjectPopover(false);
+  const handleProjectCreated = async () => {
+    if (isSavingProject) return; // Prevent double-submit
+
+    setIsSavingProject(true);
+    setAnalysisError(null);
+    try {
+      // Call the new saveProject API function
+      await saveProject(projectName, answers);
+
+      // On success, set the active project and close the popover
+      setActiveProject({ name: projectName });
+      setShowNewProjectPopover(false);
+    } catch (error: any) {
+      // On failure, show an error
+      setAnalysisError(
+        error.message || "Failed to save project. Please try again."
+      );
+    } finally {
+      setIsSavingProject(false);
+    }
   };
 
   const handleCloseNewProjectPopover = () => {
@@ -514,18 +603,23 @@ export function useWorkspaceState() {
   };
 
   const handleNextStep = () => {
-    if (step === 0 && !projectName.trim()) return;
-    setStep((prev) => Math.min(prev + 1, projectQuestions.length + 1));
+    // Ensure project name is filled before proceeding
+    if (step === 0 && projectName.trim() === "") {
+      alert("Please enter a project name.");
+      return;
+    }
+    setStep((prev) => prev + 1);
   };
 
   const handleBackStep = () => {
     setStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const handleAnswerChange = (index: number, value: string) => {
-    const newAnswers = [...answers];
-    newAnswers[index] = value;
-    setAnswers(newAnswers);
+  const handleAnswerChange = (key: string, value: string) => {
+    setAnswers((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
 
   const handleZoomIn = () => setZoom((prev) => Math.min(prev + 25, 300));
@@ -581,11 +675,9 @@ export function useWorkspaceState() {
     answers,
     zoom,
     isPanning,
-    isPaused,
-    currentQuestion,
-    questionAnswer,
     analysisError,
     isUploading,
+    isSavingProject,
 
     // --- Token State ---
     showTokenPopover,
@@ -595,7 +687,6 @@ export function useWorkspaceState() {
     // setters exposed for UI bindings
     setShowStickyNote,
     setIsPanning,
-    setQuestionAnswer,
     setProjectName,
     setAnalysisError,
 
@@ -610,7 +701,6 @@ export function useWorkspaceState() {
     handleCloseNewProjectPopover,
     handleCloseProjectPopover,
     handleSelectExistingProject,
-    handleQuestionSubmit,
     handleNextStep,
     handleBackStep,
     handleAnswerChange,
@@ -625,5 +715,13 @@ export function useWorkspaceState() {
     handleCloseTokenPopover,
     handleOpenTokenPopover,
     // ---
+
+    showAgentPopover,
+    selectedAgent,
+    handleAgentSelect,
+    handleCloseAgentPopover,
+
+    isGeneratingReport,
+    handleGenerateReport,
   };
 }

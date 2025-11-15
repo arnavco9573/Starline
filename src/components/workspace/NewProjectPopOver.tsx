@@ -4,17 +4,23 @@ import React from "react";
 import { motion } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
+interface ProjectQuestion {
+  key: string;
+  question: string;
+}
+
 interface NewProjectPopoverProps {
-  projectQuestions: string[];
+  projectQuestions: ProjectQuestion[];
   step: number;
   projectName: string;
-  answers: string[];
+  answers: Record<string, string>;
   onClose: () => void;
   onCreate: () => void;
   setProjectName: (name: string) => void;
-  onAnswerChange: (index: number, value: string) => void;
+  onAnswerChange: (key: string, value: string) => void;
   onNextStep: () => void;
   onBackStep: () => void;
+  isSaving?: boolean;
 }
 
 const NewProjectPopover: React.FC<NewProjectPopoverProps> = ({
@@ -28,6 +34,7 @@ const NewProjectPopover: React.FC<NewProjectPopoverProps> = ({
   onAnswerChange,
   onNextStep,
   onBackStep,
+  isSaving = false,
 }) => {
   return (
     <motion.div
@@ -84,17 +91,34 @@ const NewProjectPopover: React.FC<NewProjectPopoverProps> = ({
             initial={{ opacity: 0, x: 10 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <label className="text-sm font-semibold text-gray-900">
-              {projectQuestions[step - 1]}
-            </label>
-            <textarea
-              value={answers[step - 1]}
-              onChange={(e) =>
-                onAnswerChange(step - 1, e.target.value)
-              }
-              rows={3}
-              className="w-full mt-2 p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 focus:outline-none transition-colors resize-none"
-            />
+            {(() => {
+              // Get the current question object
+              const currentQuestion = projectQuestions[step - 1];
+              if (!currentQuestion) return null;
+
+              return (
+                <>
+                  <label className="text-sm font-semibold text-gray-900">
+                    {/* Render the key as the main title */}
+                    {currentQuestion.key}
+                  </label>
+                  <p className="text-sm text-gray-600 mt-1 mb-2">
+                    {/* Render the question as the prompt */}
+                    {currentQuestion.question}
+                  </p>
+                  <textarea
+                    // Get the answer from the object using the key
+                    value={answers[currentQuestion.key] || ""}
+                    onChange={(e) =>
+                      // Pass the key and new value to the handler
+                      onAnswerChange(currentQuestion.key, e.target.value)
+                    }
+                    rows={3}
+                    className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 focus:outline-none transition-colors resize-none"
+                  />
+                </>
+              );
+            })()}
           </motion.div>
         )}
         {step === projectQuestions.length + 1 && (
@@ -115,7 +139,7 @@ const NewProjectPopover: React.FC<NewProjectPopoverProps> = ({
       <div className="p-4 border-t flex justify-between items-center flex-shrink-0">
         <button
           onClick={onBackStep}
-          disabled={step === 0}
+          disabled={step === 0 || isSaving}
           className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-700 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <ChevronLeft className="w-4 h-4" /> Back
@@ -130,9 +154,10 @@ const NewProjectPopover: React.FC<NewProjectPopoverProps> = ({
         ) : (
           <button
             onClick={onCreate}
+            disabled={isSaving}
             className="px-3 py-1.5 text-sm bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
           >
-            Create
+            {isSaving ? "Creating..." : "Create"}
           </button>
         )}
       </div>
