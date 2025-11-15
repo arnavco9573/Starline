@@ -61,7 +61,7 @@ function LoginForm() {
             height={30}
           />
         </div>
-        <span className="text-3xl font-bold text-gray-900 tracking-tight">starline</span>
+        {/* <span className="text-3xl font-bold text-gray-900 tracking-tight">starline</span> */}
       </div>
 
       <h1 className="text-2xl font-semibold text-gray-900 mb-2 text-center">

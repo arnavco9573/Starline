@@ -9,8 +9,8 @@ export default function Footer() {
         {/* Top Section: ThinkDex. Academy and Powered By */}
         <div className="mb-5">
           <a href="/" className="flex items-center">
-            <Image src="/LogoBlack.png" alt="logo" width={200} height={42} />
-            
+            <Image src="/LogoBlackHindi.png" alt="logo" width={200} height={42} />
+            {/* <span className="text-4xl text-black">.AI</span> */}
           </a>
           <p className="text-sm text-gray-600 pt-6">Powered By</p>
           <p className="text-lg font-medium text-gray-800">Dexter Platforms</p>
@@ -60,11 +60,6 @@ export default function Footer() {
                 <X className="w-4 h-4 text-gray-600" />
               </a>
             </div>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              100 24th Street W Suite I-1205
-              <br />
-              Billings, MT 59102, United States
-            </p>
           </div>
 
           {/* Explore Column */}
@@ -188,7 +183,7 @@ export default function Footer() {
         {/* Bottom Section: Copyright & Legal Links */}
         <hr className="border-gray-200 mb-6" />
         <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 space-y-4 md:space-y-0">
-          <p>© 2025 Dexter Platforms, LLC. All rights reserved.</p>
+          <p>© 2025 Dexter Platforms. All rights reserved.</p>
           <div className="flex items-center space-x-4">
             <a href="#" className="hover:text-gray-700 transition-colors">
               Privacy Policy
@@ -207,11 +202,11 @@ export default function Footer() {
             </a>
             <span className="hidden md:inline text-gray-300">|</span>{" "}
             {/* Hidden on mobile, shown on desktop */}
-            <span className="hidden md:inline">United States</span>{" "}
+            <span className="hidden md:inline">India</span>{" "}
             {/* Hidden on mobile, shown on desktop */}
-            {/* On mobile, "United States" might wrap or be omitted depending on layout preference */}
+            {/* On mobile, "India" might wrap or be omitted depending on layout preference */}
           </div>
-          <p className="hidden md:inline">United States</p>{" "}
+          <p className="hidden md:inline">India</p>{" "}
         </div>
       </div>
     </footer>

@@ -3,20 +3,21 @@
 import { X, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import Link from "next/link";
 
-interface DropboxTokenPopoverProps {
+interface StarlineTokenPopoverProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (token: string) => void;
     tokenSetTime: number | null;
 }
 
-export default function DropboxTokenPopover({
+export default function StarlineTokenPopover({
     isOpen,
     onClose,
     onSubmit,
     tokenSetTime,
-}: DropboxTokenPopoverProps) {
+}: StarlineTokenPopoverProps) {
     const [token, setToken] = useState("");
     const [showToken, setShowToken] = useState(false);
 
@@ -49,7 +50,7 @@ export default function DropboxTokenPopover({
                     {/* Header */}
                     <div className="p-4 border-b flex items-center justify-between">
                         <div>
-                            <h3 className="font-bold text-gray-900">Dropbox Access Token</h3>
+                            <h3 className="font-bold text-gray-900">Starline Access Token</h3>
                             {tokenSetTime && (
                                 <p className="text-xs text-green-600 mt-1">
                                     ✓ Token set {formatTimeSince(tokenSetTime)}
@@ -75,7 +76,7 @@ export default function DropboxTokenPopover({
                                     type={showToken ? "text" : "password"}
                                     value={token}
                                     onChange={(e) => setToken(e.target.value)}
-                                    placeholder="Enter your Dropbox token..."
+                                    placeholder="Enter your Starline token..."
                                     className="w-full p-3 pr-10 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-900 focus:border-gray-900 focus:outline-none transition-colors"
                                     onKeyDown={(e) => {
                                         if (e.key === "Enter") handleSubmit();
@@ -97,17 +98,13 @@ export default function DropboxTokenPopover({
 
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                             <p className="text-xs text-blue-800 leading-relaxed">
-                                <strong>Note:</strong> Your token is required to upload PDFs to Dropbox for
+                                <strong>Note:</strong> Your token is required to upload PDFs to Starline for
                                 processing. Get your token from{" "}
-                                <a
-                                    href="https://www.dropbox.com/developers/apps"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="underline hover:text-blue-600"
-                                >
-                                    Dropbox App Console
-                                </a>
-                                .
+                                <Link
+                                href="/pricing"
+                                className="underline">
+                                    Starline
+                                </Link>
                             </p>
                         </div>
                     </div>

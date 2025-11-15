@@ -28,6 +28,8 @@ import ModeInfoPanel from "@/components/workspace/ModelInfoPanel";
 import CheckpointList from "@/components/workspace/CheckPointList";
 import DropboxTokenPopover from "@/components/workspace/DropBoxPopover";
 import ArchitectureProcessingOverlay from "@/components/workspace/ArchitecureProcessingOverlay";
+import { AGENT_INFO } from "@/lib/constants";
+import AgentSelectionPopover from "@/components/workspace/AgentSelectionPopover";
 
 const PdfPreview = React.lazy(
   () => import("@/components/workspace/PdfPreview")
@@ -60,6 +62,7 @@ export default function ImageWorkspace() {
     showProjectPopover,
     showNewProjectPopover,
     activeProject,
+    isSavingProject,
     riskScore,
     finalRiskScore,
     reportUrl,
@@ -70,10 +73,6 @@ export default function ImageWorkspace() {
     zoom,
     isPanning,
     setIsPanning,
-    isPaused,
-    currentQuestion,
-    questionAnswer,
-    setQuestionAnswer,
     analysisError,
     isUploading,
     setAnalysisError,
@@ -89,7 +88,6 @@ export default function ImageWorkspace() {
     handleCloseNewProjectPopover,
     handleCloseProjectPopover,
     handleSelectExistingProject,
-    handleQuestionSubmit,
     handleNextStep,
     handleBackStep,
     handleAnswerChange,
@@ -105,6 +103,13 @@ export default function ImageWorkspace() {
     handleCloseTokenPopover,
     handleOpenTokenPopover,
     // ---
+
+    showAgentPopover,
+    handleAgentSelect,
+    handleCloseAgentPopover,
+
+    isGeneratingReport,
+    handleGenerateReport,
   } = useWorkspaceState();
 
   const hasInputPdf = Boolean(inputPdfUrl);
@@ -138,8 +143,8 @@ export default function ImageWorkspace() {
                 key={degree}
                 onClick={() => handleDegreeClick(degree)}
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm transition ${selectedDegree === degree
-                  ? "bg-black text-white"
-                  : "bg-gray-100 text-black hover:bg-gray-200"
+                    ? "bg-black text-white"
+                    : "bg-gray-100 text-black hover:bg-gray-200"
                   }`}
               >
                 {degree}
@@ -191,6 +196,7 @@ export default function ImageWorkspace() {
                     onAnswerChange={handleAnswerChange}
                     onNextStep={handleNextStep}
                     onBackStep={handleBackStep}
+                    isSaving={isSavingProject}
                   />
                 )}
               </AnimatePresence>
@@ -222,7 +228,10 @@ export default function ImageWorkspace() {
                         className="relative inline-flex max-h-[calc(100vh*0.8*0.8)] rounded-2xl shadow-md bg-white overflow-auto"
                         style={{
                           cursor: isPanning ? "grab" : "default",
-                          overflow: processingState === "processing" ? "hidden" : "auto"
+                          overflow:
+                            processingState === "processing"
+                              ? "hidden"
+                              : "auto",
                         }}
                       >
                         {displayPdfUrl && (
@@ -245,7 +254,11 @@ export default function ImageWorkspace() {
                         )}
                         {processingState === "processing" && (
                           <ArchitectureProcessingOverlay
-                            message={isUploading ? "UPLOADING DRAWING" : "ANALYZING ARCHITECTURE"}
+                            message={
+                              isUploading
+                                ? "UPLOADING DRAWING"
+                                : "ANALYZING ARCHITECTURE"
+                            }
                             subMessage={
                               isUploading
                                 ? "Uploading drawing to analysis engine..."
@@ -340,50 +353,52 @@ export default function ImageWorkspace() {
                           processingState === "processing" ||
                           processingState === "calculating"
                         }
-                        isPaused={isPaused}
                         processedCheckpoints={processedCheckpoints}
                         totalCheckpoints={totalCheckpoints}
                         reportUrl={reportUrl}
+                        activeMode={activeMode}
+                        isGeneratingReport={isGeneratingReport}
+                        onGenerateReport={handleGenerateReport}
                       />
 
-                      {/* Question Popover */}
-                      {isPaused && currentQuestion && activeMode === "code" && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: 20 }}
-                          transition={{ duration: 0.8 }}
-                          className="mt-6 w-full max-w-md mx-auto"
-                        >
-                          <div className="bg-white rounded-xl shadow-2xl p-6 border-2 border-blue-200">
-                            <div className="flex items-center gap-2 mb-4">
-                              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-                              <h3 className="text-lg font-bold text-gray-900">
-                                Compliance Question
-                              </h3>
-                            </div>
-                            <p className="text-sm text-gray-700 mb-4 leading-relaxed">
-                              {currentQuestion}
-                            </p>
-                            <textarea
-                              value={questionAnswer}
-                              onChange={(e) => setQuestionAnswer(e.target.value)}
-                              placeholder="Enter your answer..."
-                              rows={3}
-                              className="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none mb-4 resize-none"
-                            />
-                            <div className="flex gap-2 justify-end">
-                              <button
-                                onClick={handleQuestionSubmit}
-                                disabled={!questionAnswer.trim()}
-                                className="px-5 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
-                              >
-                                Continue
-                              </button>
-                            </div>
+                      {/* Question Popover
+                    {isPaused && currentQuestion && activeMode === "code" && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 20 }}
+                        transition={{ duration: 0.8 }}
+                        className="mt-6 w-full max-w-md mx-auto"
+                      >
+                        <div className="bg-white rounded-xl shadow-2xl p-6 border-2 border-blue-200">
+                          <div className="flex items-center gap-2 mb-4">
+                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                            <h3 className="text-lg font-bold text-gray-900">
+                              Compliance Question
+                            </h3>
                           </div>
-                        </motion.div>
-                      )}
+                          <p className="text-sm text-gray-700 mb-4 leading-relaxed">
+                            {currentQuestion}
+                          </p>
+                          <textarea
+                            value={questionAnswer}
+                            onChange={(e) => setQuestionAnswer(e.target.value)}
+                            placeholder="Enter your answer..."
+                            rows={3}
+                            className="w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none mb-4 resize-none"
+                          />
+                          <div className="flex gap-2 justify-end">
+                            <button
+                              onClick={handleQuestionSubmit}
+                              disabled={!questionAnswer.trim()}
+                              className="px-5 py-2.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
+                            >
+                              Continue
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )} */}
                     </>
                   )}
               </>
@@ -397,7 +412,9 @@ export default function ImageWorkspace() {
               >
                 <div className="flex items-center gap-2">
                   <AlertTriangle className="w-5 h-5" />
-                  <span className="text-sm font-medium">Network Error. The server may be waking up.</span>
+                  <span className="text-sm font-medium">
+                    Network Error. The server may be waking up.
+                  </span>
                 </div>
 
                 <button
@@ -408,7 +425,6 @@ export default function ImageWorkspace() {
                 </button>
               </motion.div>
             )}
-
 
             {!activeMode && (
               <p className="text-lg text-gray-500">
@@ -441,8 +457,33 @@ export default function ImageWorkspace() {
             </motion.div>
           )}
 
+          {processingState === "complete" && activeMode === "code" && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="absolute top-6 right-6 flex items-center gap-3 z-20"
+            >
+              <TooltipButton
+                onClick={() => setShowStickyNote(true)}
+                tooltipText="View Issues"
+                icon={<FileText className="w-5 h-5 text-amber-900" />}
+                className="bg-gradient-to-r from-amber-400 to-yellow-400 shadow-lg"
+              />
+            </motion.div>
+          )}
+
+          <AnimatePresence>
+            {showAgentPopover && activeMode === "code" && (
+              <AgentSelectionPopover
+                agents={AGENT_INFO}
+                onSelect={handleAgentSelect}
+                onClose={handleCloseAgentPopover}
+              />
+            )}
+          </AnimatePresence>
+
           {/* --- Sticky Note Popup (Base/Plus Mode) --- */}
-          {showStickyNote && activeMode !== "code" && (
+          {showStickyNote && (
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -500,8 +541,8 @@ export default function ImageWorkspace() {
                         handleModeChange(mode);
                       }}
                       className={`w-full text-left px-3 py-2 text-sm font-medium transition ${activeMode === mode
-                        ? "bg-gray-900 text-white"
-                        : "hover:bg-gray-100/70 text-gray-800"
+                          ? "bg-gray-900 text-white"
+                          : "hover:bg-gray-100/70 text-gray-800"
                         } ${mode !== "base" ? "border-t border-gray-200/40" : ""
                         }`}
                     >
