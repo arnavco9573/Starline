@@ -1,12 +1,10 @@
 import { AnalysisIssue, Mode } from "@/types/workspace";
 import axios from "axios";
 
-// --- [FIX] YEH FUNCTION AAPKI FILE MEIN NAHIN THA ---
 export async function saveProject(
   projectName: string,
   data: Record<string, string>
 ): Promise<any> {
-  // We assume the "code" backend handles project saving
   const backendUrl = process.env.NEXT_PUBLIC_AI_CODE_BACKEND_URL;
 
   if (!backendUrl) {
@@ -27,7 +25,6 @@ export async function saveProject(
     throw new Error(message);
   }
 }
-// --- END OF FIX ---
 
 export interface WorkspaceAnalysisResponse {
   issues: AnalysisIssue[];

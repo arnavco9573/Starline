@@ -14,7 +14,7 @@ import {
   AnalyzeWorkspaceParams,
   WorkspaceAnalysisResponse,
   saveProject,
-  generateReport, // --- [FIX 3] --- Import new function
+  generateReport,
 } from "@/services/workspace";
 import { downloadBase64Pdf } from "@/lib/utils";
 
@@ -578,6 +578,9 @@ export function useWorkspaceState() {
       // On success, set the active project and close the popover
       setActiveProject({ name: projectName });
       setShowNewProjectPopover(false);
+      
+      // Trigger file upload after successful project creation
+      setTimeout(() => fileInputRef.current?.click(), 100);
     } catch (error: any) {
       // On failure, show an error
       setAnalysisError(
