@@ -182,7 +182,7 @@ export default function Navbar() {
                 Join Waiting List
               </Button>
 
-              <Link href="/auth/login">
+              <Link href="/auth/login" className="block">
                 <Button
                   variant="default"
                   className="w-full rounded-full cursor-pointer flex items-center justify-center gap-2"
@@ -198,3 +198,4 @@ export default function Navbar() {
     </header>
   );
 }
+
