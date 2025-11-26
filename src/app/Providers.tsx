@@ -1,19 +1,21 @@
+// Providers.tsx (updated)
 "use client";
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useMemo } from "react";
 import { Toaster } from "sonner";
-import WishList from "@/components/landing/WishlistModal"; // Adjust path if needed
+import WishList from "@/components/landing/WishlistModal";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
+import AccessPopup from "@/components/landing/popup";
 
-// Define the shape of the modal context
 interface ModalContextType {
   openWishlist: () => void;
+  isAccessPopupOpen: boolean;
+  closeAccessPopup: () => void;
+  openAccessPopup: () => void;
 }
 
-// Create the context
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
-// Create a custom hook that components can use to open the modal
 export const useModal = () => {
   const context = useContext(ModalContext);
   if (context === undefined) {
@@ -22,20 +24,32 @@ export const useModal = () => {
   return context;
 };
 
-// The main Providers component now manages all global providers
 export default function Providers({ children }: { children: ReactNode }) {
   const [wishlistOpen, setWishlistOpen] = useState(false);
+  const [isAccessPopupOpen, setIsAccessPopupOpen] = useState(false); // <-- false
 
   const openWishlist = () => setWishlistOpen(true);
+  const closeAccessPopup = () => {
+    setIsAccessPopupOpen(false);
+    localStorage.setItem("popupClosed", "true");
+  };
+  const openAccessPopup = () => setIsAccessPopupOpen(true);
+
+  // Memoize so the functions don't get new identity each render
+  const value = useMemo(
+    () => ({ openWishlist, isAccessPopupOpen, closeAccessPopup, openAccessPopup }),
+    [isAccessPopupOpen]
+  );
 
   return (
-    // Provide the openWishlist function to all children
     <Provider store={store}>
-      <ModalContext.Provider value={{ openWishlist }}>
+      <ModalContext.Provider value={value}>
         {children}
-        {/* Render all global UI components here */}
         <Toaster />
         <WishList open={wishlistOpen} onOpenChange={setWishlistOpen} />
+
+        {/* Render the popup once, globally */}
+        <AccessPopup isOpen={isAccessPopupOpen} onClose={closeAccessPopup} />
       </ModalContext.Provider>
     </Provider>
   );
