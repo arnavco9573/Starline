@@ -30,6 +30,7 @@ import DropboxTokenPopover from "@/components/workspace/DropBoxPopover";
 import ArchitectureProcessingOverlay from "@/components/workspace/ArchitecureProcessingOverlay";
 import { AGENT_INFO } from "@/lib/constants";
 import AgentSelectionPopover from "@/components/workspace/AgentSelectionPopover";
+import CountryPopup from "@/components/workspace/countryDropbox";
 
 const PdfPreview = React.lazy(
   () => import("@/components/workspace/PdfPreview")
@@ -121,6 +122,7 @@ export default function ImageWorkspace() {
   if (activeMode === "base") {
     availableDegrees.push(1, 2, 3, 4);
   }
+  
 
   return (
     <div className="h-screen w-full bg-white overflow-hidden flex flex-col">
@@ -219,6 +221,11 @@ export default function ImageWorkspace() {
           {/* --- Central Content Area --- */}
           <div className="w-full h-full flex flex-col items-center justify-center gap-4 text-center">
             {/* --- UI for Base/Plus Modes --- */}
+            
+            {activeMode === "plus" && (
+  <div className="absolute top-10 left-10 z-50">
+<CountryPopup activeMode={activeMode} />  </div>
+)}
             {activeMode && activeMode !== "code" && (
               <>
                 {hasInputPdf ? (
@@ -296,9 +303,11 @@ export default function ImageWorkspace() {
                     )}
                   </>
                 ) : (
+                  <>
                   <p className="text-lg text-gray-500">
                     Click the '+' icon to upload your drawing PDF
                   </p>
+                  </>
                 )}
               </>
             )}

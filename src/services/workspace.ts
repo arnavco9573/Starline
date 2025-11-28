@@ -163,6 +163,11 @@ export async function analyzeWorkspace({
     if (mode === "base") {
       formData.append("degree", String(degree));
     }
+    if(mode === "plus"){
+      console.log(localStorage.getItem("selectedCountry"));
+      console.log("check env url",process.env.NEXT_PUBLIC_AI_PLUS_BACKEND_URL);
+      formData.append("country", localStorage.getItem("selectedCountry") || "india");
+    }
 
     const backendUrl =
       mode === "plus"
