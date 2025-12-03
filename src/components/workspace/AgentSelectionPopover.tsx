@@ -61,7 +61,7 @@ const AgentSelectionPopover: React.FC<AgentPopoverProps> = ({
                 </div>
                 <div>
                   <p className="font-semibold text-gray-900 capitalize">
-                    {key.replace("_", " ") + " Agent"}
+                    {key.replace("_", " ")}
                   </p>
                   <p className="text-sm text-gray-600 mt-1 whitespace-pre-line">
                     {agent.description}
