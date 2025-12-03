@@ -7,10 +7,17 @@ import { motion } from "framer-motion";
 import { X, Building } from "lucide-react";
 
 interface AgentPopoverProps {
-  agents: Record<string, { file: string; description: string  }>;
+  agents: Record<string, { file: string; description: string }>;
   onSelect: (agentKey: string) => void;
   onClose: () => void;
 }
+
+// Custom names for 3 agents
+const DISPLAY_NAMES: Record<string, string> = {
+  arch_functions: "Architectural Functionality Agent",
+  env_vent_light: "Environmental Ventilation & Lighting Agent",
+  accessibility: "Accessibility & Universal Design Agent",
+};
 
 const AgentSelectionPopover: React.FC<AgentPopoverProps> = ({
   agents,
@@ -59,77 +66,75 @@ const AgentSelectionPopover: React.FC<AgentPopoverProps> = ({
                 <div className="p-2 bg-gray-100 rounded-full group-hover:bg-blue-100">
                   <Building className="w-5 h-5 text-gray-600 group-hover:text-blue-600" />
                 </div>
+
                 <div>
                   <p className="font-semibold text-gray-900 capitalize">
-                    {key.replace("_", " ")}
+                    {DISPLAY_NAMES[key] ||
+                      key.replace("_", " ") + " Agent"}
                   </p>
+
                   <p className="text-sm text-gray-600 mt-1 whitespace-pre-line">
-                    {agent.description}
+                    {key === "accessibility"
+                      ? "Purpose: Accessibility & universal design compliance.\nInputs: Floor Plans, Toilet Details, Ramps."
+                      : agent.description}
                   </p>
                 </div>
               </div>
             </button>
           ))}
+
           {/* 🚧 Coming Soon Section */}
-<div className="pt-6 mt-4 border-t border-gray-300">
-  <p className="text-center text-gray-700 font-semibold mb-4 tracking-wide">
-    🚧 Coming Soon 🚧
-  </p>
+          <div className="pt-6 mt-4 border-t border-gray-300">
+            <p className="text-center text-gray-700 font-semibold mb-4 tracking-wide">
+              🚧 Coming Soon 🚧
+            </p>
 
-  {[
-    {
-      title: "Fire Safety (Quantitative) Agent",
-      desc: `Purpose: Travel distance, stair width, fire-rated doors, number of exits vs occupancy.
+            {[
+              {
+                title: "Fire Safety (Quantitative) Agent",
+                desc: `Purpose: Travel distance, stair width, fire-rated doors, number of exits vs occupancy.
 Inputs: Floor Plans, Door/Stair Schedules, Fire Safety Layouts.`,
-    },
-    {
-      title: "Zoning & FAR / FSI Calculation Agent",
-      desc: `Purpose: Built-up area vs allowable FAR, ground-coverage %, height restrictions.
+              },
+              {
+                title: "Zoning & FAR / FSI Calculation Agent",
+                desc: `Purpose: Built-up area vs allowable FAR, ground-coverage %, height restrictions.
 Inputs: Site Plan, Area Statements, Floor Area Schedules, Building Sections.`,
-    },
-    {
-      title: "Structural Safety Agent",
-      desc: `Purpose: Load calculations, reinforcement specs, seismic compliance.
+              },
+              {
+                title: "Structural Safety Agent",
+                desc: `Purpose: Load calculations, reinforcement specs, seismic compliance.
 Inputs: Structural Plans + Structural Calculation Sheets.`,
-    },
-    {
-      title: "MEP (Quantitative) Agent",
-      desc: `Purpose: Pipe sizes, duct sizes, electrical load calc, sprinkler coverage.
+              },
+              {
+                title: "MEP (Quantitative) Agent",
+                desc: `Purpose: Pipe sizes, duct sizes, electrical load calc, sprinkler coverage.
 Inputs: HVAC Layouts, Plumbing Plans, Electrical SLD, Pump Room Layout.`,
-    },
-    {
-      title: "Energy Efficiency Agent",
-      desc: `Purpose: U-values, WWR %, lighting density, solar heat-gain.
+              },
+              {
+                title: "Energy Efficiency Agent",
+                desc: `Purpose: U-values, WWR %, lighting density, solar heat-gain.
 Inputs: Wall Sections, Window Schedules, Energy Compliance Sheets.`,
-    },
-  ].map((item, i) => (
-    <div
-      key={"soon_" + i}
-      className="w-full p-4 border border-gray-200 rounded-lg text-left bg-gray-50
-                 opacity-50 cursor-not-allowed select-none mb-3"
-    >
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-gray-200 rounded-full">
-          <Building className="w-5 h-5 text-gray-500" />
+              },
+            ].map((item, i) => (
+              <div
+                key={"soon_" + i}
+                className="w-full p-4 border border-gray-200 rounded-lg text-left bg-gray-50 opacity-50 cursor-not-allowed select-none mb-3"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-gray-200 rounded-full">
+                    <Building className="w-5 h-5 text-gray-500" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-700">{item.title}</p>
+                    <p className="text-sm text-gray-600 mt-1 whitespace-pre-line">
+                      {item.desc}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-
-        <div>
-          <p className="font-semibold text-gray-700">
-            {item.title} 
-          </p>
-          <p className="text-sm text-gray-600 mt-1 whitespace-pre-line">
-            {item.desc}
-          </p>
-        </div>
-      </div>
-    </div>
-  ))}
-</div>
-
-
-
-         
-       </div>
       </motion.div>
     </>
   );
