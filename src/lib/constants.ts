@@ -684,26 +684,33 @@ export const AGENT_INFO = {
   fire_safety: {
     file: "fire_safety.py",
     description:
-      "Check fire safety (egress, exit locations, sprinklers). Use Floor Plans, Fire Evacuation Plans.",
+    `Purpose: Check fire safety (egress, exit locations, sprinklers).
+     Inputs: Floor Plans, Fire Evacuation Plans.`
   },
   accessibility: {
     file: "accessibility.py",
     description:
-      "Check accessibility/universal design. Use Floor Plans, Toilet Details, Ramps.",
+      `Purpose: Check accessibility / universal design compliance.
+       Inputs: Floor Plans, Toilet Details, Ramps.`
   },
   landuse: {
     file: "landuse.py",
     description:
-      "Zoning & Land Use compliance. Use Site Plan, Plot Boundary Plan, Zoning Certificate.",
+      `Purpose: Zoning & land‐use compliance.
+       Inputs: Site Plan, Plot Boundary Plan, Zoning Certificate.
+`
   },
   arch_functions: {
     file: "arch_functions.py",
     description:
-      "Architectural functional compliance. Use Floor Plans, Sections, Elevations.",
+      `
+      Purpose: Check architectural functional compliance.
+      Inputs: Floor Plans, Sections, Elevations.`
   },
   env_vent_light: {
     file: "env_vent_light.py",
     description:
-      "Environmental / Ventilation & Lighting compliance. Use Floor Plans, Sections, Ventilation diagrams.",
+      `Purpose: Check environmental, ventilation, and daylight compliance.
+       Inputs: Floor Plans, Sections, Ventilation Diagrams.`
   },
 };

@@ -2,18 +2,19 @@
 import { useEffect, useState, useRef } from "react";
 
 const countries = [
-  { value: "india", label: "India", flag: "🇮🇳" },
-  { value: "usa", label: "USA", flag: "🇺🇸" },
-  { value: "uk", label: "United Kingdom", flag: "🇬🇧" },
-  { value: "australia", label: "Australia", flag: "🇦🇺" },
-  { value: "new_zealand", label: "New Zealand", flag: "🇳🇿" },
-  { value: "canada", label: "Canada", flag: "🇨🇦" },
-  { value: "kuwait", label: "Kuwait", flag: "🇰🇼" },
-  { value: "malaysia", label: "Malaysia", flag: "🇲🇾" },
-  { value: "qatar", label: "Qatar", flag: "🇶🇦" },
-  { value: "saudi", label: "Saudi Arabia", flag: "🇸🇦" },
-  { value: "uae", label: "United Arab Emirates", flag: "🇦🇪" },
+  { value: "india", label: "India", flag: "india.png" },
+  { value: "usa", label: "USA", flag: "usa.png" },
+  { value: "uk", label: "United Kingdom", flag: "uk.png" },
+  { value: "australia", label: "Australia", flag: "australia.png" },
+  { value: "new_zealand", label: "New Zealand", flag: "new_zealand.png" },
+  { value: "canada", label: "Canada", flag: "canada.png" },
+  { value: "kuwait", label: "Kuwait", flag: "kuwait.png" },
+  { value: "malaysia", label: "Malaysia", flag: "malaysia.png" },
+  { value: "qatar", label: "Qatar", flag: "qatar.png" },
+  { value: "saudi", label: "Saudi Arabia", flag: "saudi.png" },
+  { value: "uae", label: "United Arab Emirates", flag: "uae.png" },
 ];
+
 
 interface CountryDropdownProps {
   activeMode: string;
@@ -63,7 +64,12 @@ export default function CountryDropdown({ activeMode }: CountryDropdownProps) {
                    rounded-md text-xs shadow-sm hover:border-gray-400"
       >
         <p className="truncate ">{selectedCountry?.label}</p>
-        <span className="text-base">{selectedCountry?.flag}</span>
+        <img
+          src={`/flags/${selectedCountry?.flag}`}
+          alt={selectedCountry?.label}
+          className="w-4 h-4 object-contain"
+        />
+
       </button>
 
       {/* Dropdown */}
@@ -78,7 +84,12 @@ export default function CountryDropdown({ activeMode }: CountryDropdownProps) {
                          hover:bg-gray-100 truncate"
             >
               <span className="truncate">{c.label}</span>
-              <span className="text-base">{c.flag}</span>
+              <img
+                src={`/flags/${c.flag}`}
+                alt={c.label}
+                className="w-4 h-4 object-contain"
+              />
+
             </div>
           ))}
         </div>

@@ -42,6 +42,12 @@ const mockExistingProjects = [
   { id: "proj_789", name: "Retail Store Layout" },
 ];
 
+const modeLabels: Record<Mode, string> = {
+  base: "Q&A",
+  plus: "National Baseline",
+  code: "Advance Compliance",
+};
+
 export default function ImageWorkspace() {
   const {
     isHomePage,
@@ -534,7 +540,7 @@ export default function ImageWorkspace() {
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 rounded-full"></div>
                 <span className="relative z-10">
                   {activeMode
-                    ? activeMode.charAt(0).toUpperCase() + activeMode.slice(1)
+                    ? modeLabels[activeMode]
                     : "Select Mode"}
                 </span>
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 bg-black rounded-full p-1 shadow-md z-10">
@@ -555,7 +561,7 @@ export default function ImageWorkspace() {
                         } ${mode !== "base" ? "border-t border-gray-200/40" : ""
                         }`}
                     >
-                      {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                     {modeLabels[mode]}
                     </button>
                   ))}
                 </div>
