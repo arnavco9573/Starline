@@ -43,9 +43,9 @@ const mockExistingProjects = [
 ];
 
 const modeLabels: Record<Mode, string> = {
-  base: "Q&A",
+  base: "Q&A Assist",
   plus: "National Baseline",
-  code: "Advance Compliance",
+  code: "Advanced Compliance",
 };
 
 export default function ImageWorkspace() {
