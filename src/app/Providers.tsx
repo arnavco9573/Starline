@@ -5,7 +5,7 @@ import { Toaster } from "sonner";
 import WishList from "@/components/landing/WishlistModal";
 import { Provider } from "react-redux";
 import { store } from "@/store/store";
-import AccessPopup from "@/components/landing/popup";
+import AccessPopup from "@/components/landing/Popup";
 
 interface ModalContextType {
   openWishlist: () => void;

@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
-import Footer from "./footer";
+import Footer from "./Footer";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
