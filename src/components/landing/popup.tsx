@@ -54,7 +54,7 @@ export default function AccessPopup({ isOpen, onClose }: AccessPopupProps) {
               onClick={handleJoinWaitlist}
               className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 rounded-full transition-colors duration-200"
             >
-              Join Waitlist
+              Book a Demo
             </button>
           </div>
         </div>

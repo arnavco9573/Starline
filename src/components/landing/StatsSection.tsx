@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 interface StatItem {
   value: string;
@@ -240,8 +242,20 @@ const StatsSection: React.FC = () => {
             <p className="mt-1 text-[10px] sm:text-xs md:text-sm text-gray-600">
               {statsData.right.description}
             </p>
+
           </div>
+
           {/* --- Stat Text Blocks End --- */}
+        </div>
+        <div className="flex justify-center my-8">
+          <Link href="/research">
+            <button className="bg-black hover:bg-gray-800 text-white rounded-full font-semibold text-sm transition-all transform hover:scale-105 shadow-lg flex items-center px-6 py-3 gap-2">
+              Check Performance
+              <span className="bg-white text-black rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                <ChevronRight className="w-4 h-4" />
+              </span>
+            </button>
+          </Link>
         </div>
         {/* --- Bottom Section: The Starline Effect benefits (Responsive) --- */}
         <div className="mt-16 md:mt-0">
@@ -258,9 +272,8 @@ const StatsSection: React.FC = () => {
                   Real Results. Real Speed
                 </span>
                 <span
-                  className={`absolute inset-0 transition-transform duration-1000 ease-out ${
-                    isVisible ? "translate-x-0" : "-translate-x-full"
-                  }`}
+                  className={`absolute inset-0 transition-transform duration-1000 ease-out ${isVisible ? "translate-x-0" : "-translate-x-full"
+                    }`}
                   style={{ backgroundColor: "#e5f5f9" }}
                 />
               </span>

@@ -215,7 +215,7 @@ export default function HeroSection() {
             }}
             className="bg-white text-[#747C86] font-bold rounded-xl w-[10rem] hover:bg-gray-100 transition-all duration-300 block md:hidden"
           >
-            Join Waiting List
+            Book a Demo
           </Button>
         </motion.div>
       </div>

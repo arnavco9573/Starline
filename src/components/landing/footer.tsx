@@ -12,8 +12,8 @@ export default function Footer() {
             <Image src="/LogoBlackHindi.png" alt="logo" width={200} height={42} />
             {/* <span className="text-4xl text-black">.AI</span> */}
           </a>
-          <p className="text-sm text-gray-600 pt-6">Powered By</p>
-          <p className="text-lg font-medium text-gray-800">Dexter Platforms</p>
+          <p className="text-sm text-gray-700 pt-6">India's First Ai For Building</p>
+          <p className="text-sm text-gray-700 pt-2"> Code Compliance Check</p>
         </div>
 
         {/* Main Grid Section */}
@@ -183,7 +183,7 @@ export default function Footer() {
         {/* Bottom Section: Copyright & Legal Links */}
         <hr className="border-gray-200 mb-6" />
         <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 space-y-4 md:space-y-0">
-          <p>© 2025 Dexter Platforms. All rights reserved.</p>
+          <p>© 2026 Starline Ai Platforms. All rights reserved.</p>
           <div className="flex items-center space-x-4">
             <a href="#" className="hover:text-gray-700 transition-colors">
               Privacy Policy

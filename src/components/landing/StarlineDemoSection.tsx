@@ -11,13 +11,15 @@ export default function StarlineDemoSection() {
         {/* Text Content */}
         <div className="lg:w-1/2 text-center lg:text-left mb-10 lg:mb-0">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-thin leading-tight mb-4">
-            See the{" "}
-            <span className="text-[#cef2fb] font-semibold">StarLine AI</span>{" "}
-            platform in action
+            {" "}
+            <span className="text-white font-semibold">Our Mission & Vision</span>{" "}
+
           </h2>
-          <p className="text-base sm:text-lg text-gray-300 mb-8">
-            Get a demo and discover how go-to-market teams use StarLine AI to
-            supercharge their revenue engine and achieve full GTM Velocity.
+          <p className="text-base sm:text-lg text-gray-300 mb-8 pt-4">
+            Starline is on a mission to eliminate building code uncertainty in India through AI.
+            We help architects, interior designers, and civil engineers catch compliance issues early—saving time, rework, and approvals risk.
+            Built exclusively for Indian regulations, Starline converts complex bylaws into instant, drawing-level intelligence.
+            Our vision is to become India’s trusted, AI-native compliance layer—supporting faster approvals, smarter governance, and a more efficient construction ecosystem.
           </p>
           <button
             onClick={openWishlist}
