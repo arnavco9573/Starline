@@ -26,7 +26,7 @@ export default function WorkspaceHeader({
         <div className="flex-shrink-0 px-12 pt-4 pb-2 flex justify-between items-center">
             <a href="/" className="flex items-center">
                 <Image
-                    src={isHomePage ? "/logofinal.png" : "/LogoBlack.png"}
+                    src={isHomePage ? "/logofinal.png" : "/logo-black.png"}
                     alt="logo"
                     width={isHomePage ? 180 : 120}
                     height={42}

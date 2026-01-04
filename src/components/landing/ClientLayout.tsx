@@ -7,21 +7,12 @@ import Footer from "./Footer";
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  // Define routes where Navbar and Footer SHOULD show
-  // Strictly only the pages requested by the user
-  const showNavRoutes = [
-    "/",
-    "/pricing",
-    "/testimonials",
-    "/research",
-    "/ai-agents",
-    "/investors",
-    "/faqs"
-  ];
+  // Exclude routes like /workspace, /chat, and auth pages
+  const hideNavRoutes = ["/workspace", "/chat", "/auth/login", "/auth/callback/google"];
 
-  const shouldShow = showNavRoutes.includes(pathname);
+  const shouldHide = hideNavRoutes.some(route => pathname.startsWith(route));
 
-  if (!shouldShow) {
+  if (shouldHide) {
     return <>{children}</>;
   }
 

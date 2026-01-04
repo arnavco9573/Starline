@@ -23,7 +23,7 @@ export default function Navbar() {
         <div className="relative z-50 ml-5 md:ml-0">
           <a href="/" className="flex items-center mt-2">
             <Image
-              src={isHomePage ? "/logofinal.png" : "/LogoBlack.png"}
+              src={isHomePage ? "/logofinal.png" : "/logo-black.png"}
               alt="logo"
               width={isHomePage ? 180 : 150}
               height={42}

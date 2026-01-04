@@ -317,16 +317,16 @@ export const idealForText: Record<Mode, string> = {
 
 export const modeImages: Record<Mode, { image: string; diagram: string }> = {
   base: {
-    image: "/Base2.png",
-    diagram: "/Base1.png",
+    image: "/base-2.png",
+    diagram: "/base-1.png",
   },
   plus: {
-    image: "/Plus2.jpg",
-    diagram: "/Plus1.png",
+    image: "/plus-2.jpg",
+    diagram: "/plus-1.png",
   },
   code: {
-    image: "/Code2.jpg",
-    diagram: "/Code1.png",
+    image: "/code-2.jpg",
+    diagram: "/code-1.png",
   },
 };
 
@@ -684,7 +684,7 @@ export const AGENT_INFO = {
   fire_safety: {
     file: "fire_safety.py",
     description:
-    `Purpose: Check fire safety (egress, exit locations, sprinklers).
+      `Purpose: Check fire safety (egress, exit locations, sprinklers).
      Inputs: Floor Plans, Fire Evacuation Plans.`
   },
   accessibility: {

@@ -160,7 +160,7 @@ const StatsSection: React.FC = () => {
           <div className="relative w-[45%] md:w-[50%] lg:w-[45%] aspect-square">
             {/* Control image size relative to parent */}
             <Image
-              src="/HOUSENUMBER.jpg"
+              src="/house-number.jpg"
               alt="Building with connected figures illustrating construction delays"
               fill // Use fill to make it responsive within the container
               style={{ objectFit: "contain" }}

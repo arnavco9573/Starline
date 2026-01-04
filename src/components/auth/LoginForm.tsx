@@ -54,7 +54,7 @@ function LoginForm() {
             transitionDuration: '0.1s',
           }}
         >
-           <Image
+          <Image
             src="/logo.png"
             alt="Logo"
             width={30}
@@ -81,10 +81,11 @@ function LoginForm() {
           whileTap={{ scale: 0.98 }}
         >
           <Image
-            src="/Google Icon.svg"
-            alt="Google Icon"
-            width={30}
-            height={30}
+            src="/google-icon.svg"
+            alt="Google"
+            width={20}
+            height={20}
+            className="mr-2"
           />
           Log in With Google
         </motion.div>

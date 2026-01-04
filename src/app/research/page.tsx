@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { Card } from "../../components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   LineChart,
   Line,
@@ -79,7 +79,7 @@ export default function ResearchEvaluationPage() {
           >
             <div className="h-[24rem] rounded-[3rem] overflow-hidden bg-white shadow-2xl flex items-center justify-center">
               <img
-                src="/r&e.jpeg"
+                src="/research-hero.jpeg"
                 alt="Research and Evaluation"
                 className="w-full h-full object-cover"
               />
