@@ -247,7 +247,7 @@ const StatsSection: React.FC = () => {
 
           {/* --- Stat Text Blocks End --- */}
         </div>
-        <div className="flex justify-center my-8">
+        <div className="flex justify-center my-8 mt-[-30px]">
           <Link href="/research">
             <button className="bg-black hover:bg-gray-800 text-white rounded-full font-semibold text-sm transition-all transform hover:scale-105 shadow-lg flex items-center px-6 py-3 gap-2">
               Check Performance

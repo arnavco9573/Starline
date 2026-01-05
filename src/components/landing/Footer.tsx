@@ -12,7 +12,7 @@ export default function Footer() {
             <Image src="/logo-black-hindi.png" alt="logo" width={200} height={42} />
             {/* <span className="text-4xl text-black">.AI</span> */}
           </a>
-          <p className="text-sm text-gray-700 pt-6">India's First Ai For Building</p>
+          <p className="text-sm text-gray-700 pt-6">India's First AI For Building</p>
           <p className="text-sm text-gray-700 pt-2"> Code Compliance Check</p>
         </div>
 

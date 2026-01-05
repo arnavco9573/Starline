@@ -1,6 +1,7 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, Variants } from "framer-motion";
+import Image from "next/image";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -166,9 +167,9 @@ export default function Investors() {
                   href="https://www.linkedin.com/in/aaravarya"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-auto text-sky-700 hover:text-sky-900 transition"
+                  className="ml-auto grayscale hover:grayscale-0 transition-all opacity-80 hover:opacity-100"
                 >
-                  🔗
+                  <Image src="/linkedin.png" alt="LinkedIn" width={24} height={24} />
                 </a>
               </div>
               <div className="flex items-center gap-3">
@@ -180,9 +181,9 @@ export default function Investors() {
                   href="https://www.linkedin.com/in/gourika"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-auto text-sky-700 hover:text-sky-900 transition"
+                  className="ml-auto grayscale hover:grayscale-0 transition-all opacity-80 hover:opacity-100"
                 >
-                  🔗
+                  <Image src="/linkedin.png" alt="LinkedIn" width={24} height={24} />
                 </a>
               </div>
             </div>
