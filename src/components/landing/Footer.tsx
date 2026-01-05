@@ -9,7 +9,7 @@ export default function Footer() {
         {/* Top Section: ThinkDex. Academy and Powered By */}
         <div className="mb-5">
           <a href="/" className="flex items-center">
-            <Image src="/LogoBlackHindi.png" alt="logo" width={200} height={42} />
+            <Image src="/logo-black-hindi.png" alt="logo" width={200} height={42} />
             {/* <span className="text-4xl text-black">.AI</span> */}
           </a>
           <p className="text-sm text-gray-700 pt-6">India's First Ai For Building</p>
