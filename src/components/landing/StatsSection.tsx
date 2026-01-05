@@ -167,8 +167,8 @@ const StatsSection: React.FC = () => {
               className="z-0"
               sizes="(max-width: 640px) 60vw, (max-width: 768px) 60vw, (max-width: 1024px) 50vw, 45vw" // Provide sizes hint
             />
-          </div>
 
+          </div>
           {/* --- DOTTED LINES (Responsive) --- */}
           {/* Line for Top Stat */}
           <div

@@ -106,11 +106,11 @@ const WishList = ({ open, onOpenChange }: WishListProps) => {
         <div className="p-4 sm:p-6 border-b border-gray-200 flex items-start justify-between">
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-              Join the Waiting List
+              Book Live Demo or Get early access & updates.
             </h2>
-            <p className="text-sm sm:text-base text-gray-600 mt-1">
+            {/* <p className="text-sm sm:text-base text-gray-600 mt-1">
               Get early access and updates.
-            </p>
+            </p> */}
           </div>
           <button
             onClick={() => onOpenChange(false)}
@@ -255,9 +255,8 @@ const WishList = ({ open, onOpenChange }: WishListProps) => {
                              peer-checked:bg-blue-600 peer-checked:border-blue-600`} // Simplified conditional styling using peer
                 >
                   <svg
-                    className={`w-3 h-3 text-white transition-opacity duration-200 ${
-                      formData.bookDemo ? "opacity-100" : "opacity-0" // Control checkmark visibility
-                    }`}
+                    className={`w-3 h-3 text-white transition-opacity duration-200 ${formData.bookDemo ? "opacity-100" : "opacity-0" // Control checkmark visibility
+                      }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
