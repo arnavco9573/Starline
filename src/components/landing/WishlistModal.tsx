@@ -293,7 +293,7 @@ const WishList = ({ open, onOpenChange }: WishListProps) => {
               ) : formData.bookDemo ? (
                 "Book Demo & Join Waitlist"
               ) : (
-                "Join Waitlist"
+                "Book Demo"
               )}
             </button>
           </div>
