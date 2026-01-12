@@ -4,10 +4,8 @@ import { useMemo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 
 // ✅ Correct for pdfjs-dist v5+
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/legacy/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
+// ✅ Dynamic CDN URL to ensure API and Worker versions always match
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface PdfPreviewProps {
   fileUrl: string;
